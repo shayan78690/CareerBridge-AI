@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: job-portal
+    env: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: |
+      python manage.py migrate
+      gunicorn job_portal.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jobportal-db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: WEB_CONCURRENCY
+        value: "4"
+    disk:
+      name: media
+      mountPath: /app/media
+      sizeGB: 1
+
+databases:
+  - name: jobportal-db
+    plan: free
+    databaseName: jobportal
+    user: jobportal_user

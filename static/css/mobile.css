@@ -1,0 +1,161 @@
+/* Mobile-specific enhancements */
+@media (max-width: 768px) {
+    /* Improve touch targets */
+    .btn, .nav-link, .form-control {
+        min-height: 44px;
+    }
+    
+    /* Adjust card padding */
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    /* Improve table readability */
+    .table-responsive table {
+        font-size: 0.875rem;
+    }
+    
+    .table-responsive th,
+    .table-responsive td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    /* Stack buttons on mobile */
+    .btn-group-vertical .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Adjust hero section for mobile */
+    .hero-section {
+        padding: 80px 0 40px;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+    
+    /* Improve form layout */
+    .form-row .col,
+    .form-row .col-auto {
+        margin-bottom: 1rem;
+    }
+    
+    /* Adjust footer for mobile */
+    .footer .col-md-3,
+    .footer .col-md-2 {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    /* Improve job cards on mobile */
+    .job-card .d-flex {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .job-card .company-logo {
+        margin: 0 auto 1rem;
+    }
+    
+    /* Navigation improvements */
+    .navbar-collapse {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    /* Statistics grid adjustment */
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Further mobile optimizations */
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    /* Button adjustments */
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    /* Card adjustments */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    /* Form adjustments */
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Hide less important elements on very small screens */
+    .d-none-xs {
+        display: none !important;
+    }
+    
+    /* Improve text readability */
+    body {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+    h5 { font-size: 1rem; }
+    
+    /* Adjust padding for mobile */
+    .py-5 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+    
+    .my-5 {
+        margin-top: 2rem !important;
+        margin-bottom: 2rem !important;
+    }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+    .job-card:hover {
+        transform: none;
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+    
+    /* Improve touch scrolling */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* High-resolution displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .navbar-brand {
+        font-weight: 600;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}

@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Details - {{ application.job.position }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="gradient-text fw-bold mb-2">Application Details</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            {% if can_manage %}
+                            <li class="breadcrumb-item"><a href="{% url 'employer_dashboard' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'employer_application_list' %}">Applications</a></li>
+                            {% else %}
+                            <li class="breadcrumb-item"><a href="{% url 'my_applications' %}">My Applications</a></li>
+                            {% endif %}
+                            <li class="breadcrumb-item active">Application Details</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'job_detail' application.job.pk %}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-2"></i>View Job
+                    </a>
+                    {% if can_manage %}
+                    <a href="{% url 'employer_application_list_by_job' application.job.pk %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-list me-2"></i>All Applications
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Application Status Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Application Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="mb-3">
+                                <span class="badge 
+                                    {% if application.status == 'applied' %}bg-primary
+                                    {% elif application.status == 'under_review' %}bg-info
+                                    {% elif application.status == 'shortlisted' %}bg-warning
+                                    {% elif application.status == 'interview' %}bg-purple
+                                    {% elif application.status == 'accepted' %}bg-success
+                                    {% elif application.status == 'rejected' %}bg-danger
+                                    {% else %}bg-secondary{% endif %} fs-6">
+                                    {{ application.get_status_display }}
+                                </span>
+                            </h4>
+                            <p class="text-muted mb-0">
+                                Applied: {{ application.applied_at|date:"F d, Y" }}
+                                <br>
+                                Last updated: {{ application.updated_at|date:"F d, Y" }}
+                            </p>
+                        </div>
+                        {% if can_manage %}
+                        <div class="col-md-6">
+                            <form method="post" action="{% url 'update_application_status' application.pk %}">
+                                {% csrf_token %}
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        <select name="status" class="form-select" required>
+                                            {% for status_value, status_label in application.APPLICATION_STATUS %}
+                                            <option value="{{ status_value }}" 
+                                                {% if application.status == status_value %}selected{% endif %}>
+                                                {{ status_label }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applicant Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Applicant Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4>{{ application.applicant.username }}</h4>
+                            <p class="text-muted mb-3">{{ application.applicant.email }}</p>
+                            
+                            {% if application.applicant.phone_number %}
+                            <p><strong>Phone:</strong> {{ application.applicant.phone_number }}</p>
+                            {% endif %}
+                            
+                            <p><strong>Years of Experience:</strong> {{ application.years_of_experience }}</p>
+                            
+                            {% if application.expected_salary %}
+                            <p><strong>Expected Salary:</strong> ${{ application.expected_salary }}</p>
+                            {% endif %}
+                            
+                            {% if application.applicant.skills %}
+                            <p><strong>Skills:</strong> {{ application.applicant.skills }}</p>
+                            {% endif %}
+                            
+                            {% if application.applicant.experience %}
+                            <p><strong>Experience:</strong> {{ application.applicant.experience }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 text-center">
+                            {% if application.applicant.profile_picture %}
+                            <img src="{{ application.applicant.profile_picture.url }}" 
+                                 alt="Profile Picture" 
+                                 class="rounded-circle mb-3"
+                                 style="width: 120px; height: 120px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width: 120px; height: 120px;">
+                                <i class="fas fa-user fa-3x text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <a href="{% url 'download_resume' application.pk %}" class="btn btn-success">
+                                    <i class="fas fa-download me-2"></i>Download Resume
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cover Letter -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Cover Letter
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="cover-letter-content">
+                        {{ application.cover_letter|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employer Notes (Only visible to employer and applicant) -->
+            {% if application.employer_notes %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-sticky-note me-2"></i>Employer Notes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="employer-notes-content bg-light p-3 rounded">
+                        {{ application.employer_notes|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Employer Notes Form (Only for employer) -->
+            {% if can_manage %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Add/Update Notes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'update_application_status' application.pk %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="employer_notes" class="form-label">Private Notes (Only visible to you)</label>
+                            <textarea class="form-control" id="employer_notes" name="employer_notes" 
+                                      rows="4" placeholder="Add private notes about this applicant...">{{ application.employer_notes|default:'' }}</textarea>
+                        </div>
+                        <input type="hidden" name="status" value="{{ application.status }}">
+                        <button type="submit" class="btn btn-primary">Save Notes</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Job Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Job Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="text-primary">{{ application.job.position }}</h6>
+                    <p class="mb-2"><strong>Company:</strong> {{ application.job.company_name }}</p>
+                    <p class="mb-2"><strong>Location:</strong> {{ application.job.location }}</p>
+                    <p class="mb-2"><strong>Type:</strong> {{ application.job.get_job_type_display }}</p>
+                    <p class="mb-2"><strong>Experience:</strong> {{ application.job.get_experience_required_display }}</p>
+                    {% if application.job.salary %}
+                    <p class="mb-0"><strong>Salary:</strong> ${{ application.job.salary }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'job_detail' application.job.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-2"></i>View Job Posting
+                        </a>
+                        <a href="{% url 'download_resume' application.pk %}" class="btn btn-success">
+                            <i class="fas fa-download me-2"></i>Download Resume
+                        </a>
+                        {% if can_manage %}
+                        <a href="{% url 'employer_application_list_by_job' application.job.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>All Applications for this Job
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Application Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item {% if application.status != 'applied' %}completed{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Applied</h6>
+                                <small class="text-muted">{{ application.applied_at|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if application.status == 'under_review' or application.status == 'shortlisted' or application.status == 'interview' or application.status == 'accepted' %}completed{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Under Review</h6>
+                                <small class="text-muted">Application being reviewed</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if application.status == 'shortlisted' or application.status == 'interview' or application.status == 'accepted' %}completed{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Shortlisted</h6>
+                                <small class="text-muted">Selected for further consideration</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if application.status == 'interview' or application.status == 'accepted' %}completed{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Interview</h6>
+                                <small class="text-muted">Interview scheduled</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item {% if application.status == 'accepted' %}completed{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Accepted</h6>
+                                <small class="text-muted">Job offer extended</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 20px;
+    }
+    
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #dee2e6;
+        border: 2px solid white;
+    }
+    
+    .timeline-item.completed .timeline-marker {
+        background: var(--success);
+    }
+    
+    .timeline-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: -25px;
+        top: 12px;
+        bottom: -20px;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .timeline-item.completed:not(:last-child)::after {
+        background: var(--success);
+    }
+    
+    .bg-purple {
+        background-color: #6f42c1 !important;
+    }
+    
+    .cover-letter-content {
+        line-height: 1.8;
+        white-space: pre-wrap;
+    }
+    
+    .employer-notes-content {
+        background: #f8f9fa !important;
+        border-left: 4px solid var(--primary);
+    }
+</style>
+{% endblock %}

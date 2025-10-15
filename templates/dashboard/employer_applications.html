@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load application_filters %}  <!-- Add this line at the top -->
+
+{% block title %}Applications - JobPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h1 class="gradient-text fw-bold mb-2">
+                        {% if current_job %}
+                        Applications for "{{ current_job.position }}"
+                        {% else %}
+                        All Applications
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted">
+                        Manage and review job applications{% if current_job %} for this position{% endif %}
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    {% if current_job %}
+                    <a href="{% url 'employer_application_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i>All Applications
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'employer_dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        Applications ({{ applications.count }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Applicant</th>
+                                    <th>Position</th>
+                                    <th>Applied Date</th>
+                                    <th>Experience</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in applications %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if application.applicant.profile_picture %}
+                                            <img src="{{ application.applicant.profile_picture.url }}" 
+                                                 alt="Profile" 
+                                                 class="rounded-circle me-3"
+                                                 style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% else %}
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3"
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ application.applicant.username }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ application.applicant.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ application.job.position }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ application.job.company_name }}</small>
+                                    </td>
+                                    <td>
+                                        {{ application.applied_at|date:"M d, Y" }}
+                                        <br>
+                                        <small class="text-muted">{{ application.applied_at|timesince }} ago</small>
+                                    </td>
+                                    <td>
+                                        {{ application.years_of_experience }} years
+                                        {% if application.expected_salary %}
+                                        <br>
+                                        <small class="text-muted">${{ application.expected_salary }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if application.status == 'applied' %}bg-primary
+                                            {% elif application.status == 'under_review' %}bg-info
+                                            {% elif application.status == 'shortlisted' %}bg-warning
+                                            {% elif application.status == 'interview' %}bg-purple
+                                            {% elif application.status == 'accepted' %}bg-success
+                                            {% elif application.status == 'rejected' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ application.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'application_detail' application.pk %}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'download_resume' application.pk %}" 
+                                               class="btn btn-sm btn-outline-success" 
+                                               title="Download Resume">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-file-alt fa-4x text-muted mb-4"></i>
+                        <h4 class="text-muted mb-3">No Applications Yet</h4>
+                        <p class="text-muted mb-4">
+                            {% if current_job %}
+                            No one has applied to this job yet.
+                            {% else %}
+                            You haven't received any applications yet.
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'job_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Post a New Job
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Statistics -->
+    {% if applications %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Application Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        {% for status_value, status_label in applications.first.APPLICATION_STATUS %}
+                        <div class="col-md-2 col-4 mb-3">
+                            <div class="stat-card-small">
+                                <h4 class="text-primary">{{ applications|status_count:status_value }}</h4>
+                                <small class="text-muted">{{ status_label }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .stat-card-small {
+        padding: 1rem;
+        border-radius: var(--radius);
+        background: #f8f9fa;
+    }
+    
+    .bg-purple {
+        background-color: #6f42c1 !important;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}

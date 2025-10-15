@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for {{ job.position }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Apply for {{ job.position }}</h2>
+                    <p class="text-center text-muted mb-4">at {{ job.company_name }}</p>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_cover_letter" class="form-label">Cover Letter *</label>
+                            <textarea class="form-control" id="id_cover_letter" name="cover_letter" rows="6" required placeholder="Explain why you are a good fit for this position...">{{ form.cover_letter.value|default:'' }}</textarea>
+                            {% if form.cover_letter.errors %}
+                            <div class="text-danger">{{ form.cover_letter.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_years_of_experience" class="form-label">Years of Experience *</label>
+                                    <input type="number" class="form-control" id="id_years_of_experience" name="years_of_experience" value="{{ form.years_of_experience.value|default:'0' }}" min="0" required>
+                                    {% if form.years_of_experience.errors %}
+                                    <div class="text-danger">{{ form.years_of_experience.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_expected_salary" class="form-label">Expected Salary (optional)</label>
+                                    <input type="number" class="form-control" id="id_expected_salary" name="expected_salary" value="{{ form.expected_salary.value|default:'' }}" step="0.01" min="0" placeholder="e.g., 50000">
+                                    {% if form.expected_salary.errors %}
+                                    <div class="text-danger">{{ form.expected_salary.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_resume" class="form-label">Resume *</label>
+                            <input type="file" class="form-control" id="id_resume" name="resume" accept=".pdf,.doc,.docx" required>
+                            <div class="form-text">Upload your resume (PDF, DOC, DOCX). Max size: 5MB.</div>
+                            {% if form.resume.errors %}
+                            <div class="text-danger">{{ form.resume.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Application
+                            </button>
+                            <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.position }} - {{ job.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="card-title h3">{{ job.position }}</h1>
+                            <h2 class="h5 text-muted">{{ job.company_name }}</h2>
+                        </div>
+                        {% if job.company_logo %}
+                        <img src="{{ job.company_logo.url }}" alt="{{ job.company_name }} logo" class="company-logo" style="width: 80px; height: 80px;">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><i class="fas fa-map-marker-alt text-primary me-2"></i><strong>Location:</strong> {{ job.location }}</p>
+                            <p><i class="fas fa-briefcase text-primary me-2"></i><strong>Job Type:</strong> {{ job.get_job_type_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><i class="fas fa-chart-line text-primary me-2"></i><strong>Experience:</strong> {{ job.get_experience_required_display }}</p>
+                            {% if job.salary %}
+                            <p><i class="fas fa-money-bill-wave text-primary me-2"></i><strong>Salary:</strong> ${{ job.salary }} {{ job.salary_currency }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4>Job Description</h4>
+                        <p>{{ job.job_description|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4>Requirements</h4>
+                        <p>{{ job.requirements|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4>Responsibilities</h4>
+                        <p>{{ job.responsibilities|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4>Required Skills</h4>
+                        <p>{{ job.skills_required|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    
+                    {% if user.is_authenticated %}
+                        {% if user.user_type == 'job_seeker' %}
+                            {% if has_applied %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-check-circle me-2"></i>You have already applied for this position
+                            </div>
+                            {% else %}
+                            <a href="{% url 'job_apply' job.pk %}" class="btn btn-success w-100 mb-3">
+                                <i class="fas fa-paper-plane me-2"></i>Apply Now
+                            </a>
+                            {% endif %}
+                        {% elif user.user_type == 'employer' and job.employer == user %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>This is your job posting
+                        </div>
+                        {% endif %}
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Please login to apply for this job
+                    </div>
+                    <a href="{% url 'login' %}?next={% url 'job_detail' job.pk %}" class="btn btn-primary w-100 mb-2">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">Register</a>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="job-meta">
+                        <h6>Job Information</h6>
+                        <ul class="list-unstyled">
+                            <li><small><strong>Posted:</strong> {{ job.created_at|date:"M d, Y" }}</small></li>
+                            <li><small><strong>Employment Type:</strong> {{ job.get_job_type_display }}</small></li>
+                            <li><small><strong>Experience Level:</strong> {{ job.get_experience_required_display }}</small></li>
+                            <li><small><strong>Location:</strong> {{ job.location }}</small></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

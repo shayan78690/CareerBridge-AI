@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications - JobPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h1 class="gradient-text fw-bold mb-2">My Job Applications</h1>
+                    <p class="text-muted">Track your job applications and their status</p>
+                </div>
+                <a href="{% url 'job_list' %}" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Find More Jobs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications List -->
+    {% if applications %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Application History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Company</th>
+                                    <th>Applied Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in applications %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ application.job.position }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ application.job.company_name }}
+                                    </td>
+                                    <td>
+                                        {{ application.applied_at|date:"M d, Y" }}
+                                        <br>
+                                        <small class="text-muted">{{ application.applied_at|timesince }} ago</small>
+                                    </td>
+                                    <td>
+                                        {% if application.status == 'applied' %}
+                                        <span class="badge bg-primary">Applied</span>
+                                        {% elif application.status == 'under_review' %}
+                                        <span class="badge bg-info">Under Review</span>
+                                        {% elif application.status == 'shortlisted' %}
+                                        <span class="badge bg-warning">Shortlisted</span>
+                                        {% elif application.status == 'interview' %}
+                                        <span class="badge bg-purple">Interview</span>
+                                        {% elif application.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                        {% elif application.status == 'accepted' %}
+                                        <span class="badge bg-success">Accepted</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ application.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'application_detail' application.pk %}" class="btn btn-sm btn-outline-primary" title="View Application Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'job_detail' application.job.pk %}" class="btn btn-sm btn-outline-info" title="View Job Posting">
+                                                <i class="fas fa-briefcase"></i>
+                                            </a>
+                                            <a href="{% url 'download_resume' application.pk %}" class="btn btn-sm btn-outline-success" title="Download Resume">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-file-alt fa-4x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No Applications Yet</h3>
+                    <p class="text-muted mb-4">You haven't applied to any jobs yet. Start browsing available positions to find your next opportunity!</p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{% url 'job_list' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search me-2"></i>Browse Jobs
+                        </a>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user me-2"></i>Complete Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Application Status Guide -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Application Status Guide</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 col-6 mb-3">
+                            <span class="badge bg-primary mb-2">Applied</span>
+                            <p class="small text-muted mb-0">Application submitted</p>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <span class="badge bg-info mb-2">Under Review</span>
+                            <p class="small text-muted mb-0">Employer reviewing application</p>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <span class="badge bg-warning mb-2">Shortlisted</span>
+                            <p class="small text-muted mb-0">Selected for next round</p>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <span class="badge bg-purple mb-2">Interview</span>
+                            <p class="small text-muted mb-0">Interview scheduled</p>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <span class="badge bg-success mb-2">Accepted</span>
+                            <p class="small text-muted mb-0">Job offer received</p>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <span class="badge bg-danger mb-2">Rejected</span>
+                            <p class="small text-muted mb-0">Application not selected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1 !important;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+    }
+    
+    .btn-group .btn:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    
+    .btn-group .btn:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        margin-left: -1px;
+    }
+</style>
+
+<script>
+    // Add hover effects to application rows
+    document.addEventListener('DOMContentLoaded', function() {
+        const applicationRows = document.querySelectorAll('tbody tr');
+        
+        applicationRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8f9fa';
+                this.style.transform = 'translateX(5px)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+                this.style.transform = '';
+            });
+        });
+        
+        // Add status-specific styling
+        const statusBadges = document.querySelectorAll('.badge');
+        statusBadges.forEach(badge => {
+            if (badge.classList.contains('bg-success')) {
+                badge.style.boxShadow = '0 2px 4px rgba(25, 135, 84, 0.3)';
+            } else if (badge.classList.contains('bg-danger')) {
+                badge.style.boxShadow = '0 2px 4px rgba(220, 53, 69, 0.3)';
+            } else if (badge.classList.contains('bg-warning')) {
+                badge.style.boxShadow = '0 2px 4px rgba(255, 193, 7, 0.3)';
+            } else if (badge.classList.contains('bg-info')) {
+                badge.style.boxShadow = '0 2px 4px rgba(13, 202, 240, 0.3)';
+            } else if (badge.classList.contains('bg-purple')) {
+                badge.style.boxShadow = '0 2px 4px rgba(111, 66, 193, 0.3)';
+            }
+        });
+    });
+</script>
+{% endblock %}

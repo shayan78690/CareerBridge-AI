@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - JobPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">My Profile</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h4>{{ user.username }}</h4>
+                            <p class="text-muted">{{ user.get_user_type_display }}</p>
+                            {% if user.user_type == 'employer' and user.company_name %}
+                            <p><strong>Company:</strong> {{ user.company_name }}</p>
+                            {% endif %}
+                            {% if user.user_type == 'job_seeker' and user.skills %}
+                            <p><strong>Skills:</strong> {{ user.skills }}</p>
+                            <p><strong>Experience:</strong> {{ user.experience }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 text-center">
+                            {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                <i class="fas fa-user fa-2x text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Contact Information</h5>
+                                    <p><strong>Email:</strong> {{ user.email }}</p>
+                                    {% if user.phone_number %}
+                                    <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Account Statistics</h5>
+                                    {% if user.user_type == 'job_seeker' %}
+                                    <p><strong>Applications:</strong> {{ user.applications.count }}</p>
+                                    {% elif user.user_type == 'employer' %}
+                                    <p><strong>Jobs Posted:</strong> {{ user.jobs.count }}</p>
+                                    <p><strong>Total Applications:</strong> {{ user.jobs.applications.count }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="#" class="btn btn-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
