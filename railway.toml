@@ -1,0 +1,9 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python manage.py migrate && gunicorn job_portal.wsgi:application --bind 0.0.0.0:$PORT"
+
+[env]
+DEBUG = "false"
+DISABLE_COLLECTSTATIC = "0"
