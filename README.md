@@ -33,15 +33,6 @@ A beautiful, feature-rich job portal built with **Django** and **Django REST Fra
 
 ---
 
-## 🎨 Screenshots
-
-| Home Page | Job Listings | Employer Dashboard |
-|------------|--------------|--------------------|
-| ![Home](https://via.placeholder.com/400x250/667eea/ffffff?text=Beautiful+Home+Page) | ![Listings](https://via.placeholder.com/400x250/764ba2/ffffff?text=Job+Listings) | ![Dashboard](https://via.placeholder.com/400x250/f093fb/ffffff?text=Employer+Dashboard) |
-
-| Application Details | Mobile View |
-|----------------------|-------------|
-| ![Details](https://via.placeholder.com/400x250/4facfe/ffffff?text=Application+Details) | ![Mobile](https://via.placeholder.com/400x250/43e97b/ffffff?text=Mobile+Friendly) |
 
 ---
 
